@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="referrer" content="always" />
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,shrink-to-fit=no,user-scalable=no,minimal-ui" />
+  <title>Share Texts</title>
+  <script src="/js/libs/jquery.min.js"></script>
+  <script>
+    function loadTexts() {
+      $('div[name="texts"]').load('/texts', function(data, status, xhr) {
+        if (status !== 'success') {
+          alert('Error: ' + xhr.status + ', ' + xhr.statusText)
+        }
+      })
+    }
+
+    $(document).ready(loadTexts)
+
+    function addText() {
+      $.post('/texts', {
+        'action': 'add',
+        'text': $('#addtext').val(),
+      }, (data, status, xhr) => {
+        console.log(data, status)
+        loadTexts()
+      }, 'json')
+    }
+
+    function setText(i) {
+      $.post('/texts', {
+        'action': 'set',
+        'id': i,
+        'text': $('#text_' + i).val(),
+      }, (data, status, xhr) => {
+        console.log(data, status)
+      }, 'json')
+    }
+
+    function removeText(i) {
+      $.post('/texts', {
+        'action': 'remove',
+        'id': i,
+      }, (data, status, xhr) => {
+        console.log(data, status)
+        $('#line_' + i).remove()
+      }, 'json')
+    }
+  </script>
+  <style>
+  textarea {
+    font-family: Monospace;
+  }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but Share Texts doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+  </noscript>
+  <div align="center" width="100%">
+    <button onclick="addText()">Add</button>
+    <textarea id="addtext" cols="24" rows="3"></textarea>
+    <button onclick="$('#addtext').val('')">Clear</button>
+  </div>
+  <div align="center" name="texts"></div>
+</body>
+
+</html>
